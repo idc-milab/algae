@@ -106,7 +106,7 @@ void loop() {
       Serial.println("Pump1 - Pump Off");
    
 
-    delay(166666);// Delay Bbetween loops;
+    delay(200000);// Delay Bbetween loops;
 }
 }
   
