@@ -12,6 +12,8 @@ long sec = 00;
 long mint = 00;
 long hr = 00;
 
+
+
 // varaibels that we want to adjuste
 int airPersure = 40;
 int DelayBetweenLoops = 200000; // time from session to sesiion
@@ -45,27 +47,28 @@ void setup()
 // one loop of Pump1,Pump2 ane Air
 void oneFullCircele()
 {
+
   analogWrite(AIR, airPersure); //Turn airPump on
-  string writeSdLog = "";
-  writeSdLog += " Air Pump On  ";
+  //string writeSdLog = "";
+ // writeSdLog += " Air Pump On ";
   Serial.println("Air Pump On");
   digitalWrite(PUMP2, HIGH); // Turn on pump2
-  writeSdLog += " Pump2 Pump On  ";
+ // writeSdLog += " Pump2 Pump On  ";
   Serial.println("Pump2 Pump On");
   delay(pump2DelayTime);    // How much time Pump2 would be on
   digitalWrite(PUMP2, LOW); // Turn Pump2 off
-  writeSdLog += " Pump2 Pump Off  ";
+ // writeSdLog += " Pump2 Pump Off  ";
   Serial.println("Pump2 Pump Off");
   digitalWrite(PUMP1, HIGH); //Turn on Pump1
-  writeSdLog += " Pump1 Pump On  ";
+ // writeSdLog += " Pump1 Pump On  ";
   Serial.println("Pump1 Pump On");
   delay(pump1DelayTime);    // How much time Pump1 would be on
   digitalWrite(PUMP1, LOW); //  Turn off pump1 until next loop
-  writeSdLog += " Pump1 Pump Off  ";
+ // writeSdLog += " Pump1 Pump Off  ";
   Serial.println("Pump1 Pump Off");
   if (data_file) // cheack if there is data_file
   {
-    data_file.println(writeSdLog);
+  //  data_file.println(writeSdLog);
     data_file.flush(); //saving the file
     data_file.close(); //closing the file
     Serial.println("file closed");
