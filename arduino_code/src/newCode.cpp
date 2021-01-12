@@ -1,10 +1,23 @@
 #include <EEPROM.h>
+#include <Arduino.h>
+#include <SD.h>
+#include <SPI.h>
+#include <string.h>
 
 #define STATE_NONE 0
 #define STATE_GROWING 10
 #define STATE_HARVESTING 20
 #define STATE_FEEDING 30
 
+int handleGrowing();
+int handleHarvesting();
+int handleFeeding();
+void handleStateTransition(int old, int neww);
+void logToFile(String msg);
+int restorePreviousState();
+void logToFile(String);
+
+File data_file;
 int newState = STATE_NONE;
 int state;
 int harvesteTimeDelay = 5000;
@@ -118,7 +131,7 @@ void logToFile(String msg)
   if (data_file)
   {
     data_file.println(msg);       // cheack how to right rtc.now
-    data_file.println(rtc.now()); // cheack how to wright rtc.now to show exact time
+   // data_file.println(rtc.now()); // cheack how to wright rtc.now to show exact time
   }
   else
   {
