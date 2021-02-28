@@ -3,7 +3,11 @@
 #include <SD.h>
 #include <SPI.h>
 #include <string.h>
+#include <DS1307.h>
+#include <Wire.h>
 
+
+DS1307 rtc;
 #define STATE_NONE 0
 #define STATE_GROWING 10
 #define STATE_HARVESTING 20
@@ -16,6 +20,7 @@ void handleStateTransition(int old, int neww);
 void logToFile(String msg);
 int restorePreviousState();
 void logToFile(String);
+void getTime();
 
 File data_file;
 int newState = STATE_NONE;
@@ -29,6 +34,9 @@ const int PUMP1 = 6;
 const int PUMP2 = 7;
 const int AIR = 9; // the Arduino pin, which connects to the IN pin of relay
 // the setup function runs once when you press reset or power the board
+uint8_t sec, min, hour, day, month;
+uint16_t year;
+
 
 void setup()
 {
@@ -41,10 +49,13 @@ void setup()
   EEPROM.write(202, harvesteTimeDelay);
   EEPROM.write(303, harvesteTimeDelay);
   data_file = SD.open("data.txt", FILE_WRITE);
+  rtc.set(0, 0, 8, 24, 12, 2014); //08:00:00 24.12.2014 //sec, min, hour, day, month, year  - only set one time
+  rtc.start();
 }
 
 void loop()
 {
+  
   switch (state)
   {
   case STATE_GROWING:
@@ -75,7 +86,7 @@ int handleGrowing()
   // 2.1.1 if spectometer green enough, return STATE_HARVESTING
   // 2.2 if not, return STATE_GROWING
 
-  return STATE_GROWING;
+  return STATE_HARVESTING;
 }
 
 int handleHarvesting()
@@ -86,11 +97,12 @@ int handleHarvesting()
   Serial.println("Air Pump Off");
   digitalWrite(PUMP2, HIGH);        // activate pump2
   Serial.println("Pump2 Pump On");
-  delay(harvestingDurationSeconds); // delay(harvestingDurationSeconds * 1000L);
+  delay(harvestingDurationSeconds);// delay(harvestingDurationSeconds * 1000L);
+  digitalWrite(PUMP2, LOW);
+  Serial.println("Pump2 Pump Off"); // stop activate pump2 
   analogWrite(AIR, airPressure);    //Turn airPump On
   Serial.println("Air Pump On");
-  digitalWrite(PUMP2, LOW);
-  Serial.println("Pump2 Pump Off"); // stop activate pump2
+  
   return STATE_FEEDING;             //next step State
 }
 
@@ -100,9 +112,19 @@ int handleFeeding()
   int feedingDurationSeconds = EEPROM.read(303);
   digitalWrite(PUMP1, HIGH);         // activate pump1
   Serial.println("Pump1 Pump On");
+  Serial.println("Time: ");
+  Serial.print(hour, DEC);
+  Serial.print(":");
+  Serial.print(min, DEC);
+  Serial.print(":");
   delay(feedingDurationSeconds);
   digitalWrite(PUMP1, LOW);         // stop activate pump1
   Serial.println("Pump1 Pump Off"); // delay(feedingDurationSeconds * 1000L);
+  Serial.println("Time: ");
+  Serial.print(hour, DEC);
+  Serial.print(":");
+  Serial.print(min, DEC);
+  Serial.print(":");
 
   return STATE_GROWING;             //next step State
 }
@@ -114,6 +136,7 @@ void handleStateTransition(int old, int neww)
   EEPROM.write(0, neww);
   // TODO:
   // 1.1. get current time using rtc.now();
+
   // 1.2. serialize time to bytes
   // 1.3. persist times bytes to eeprom at address 1 upwards
   // 1.4. lastStateTransition = now;
@@ -139,4 +162,24 @@ void logToFile(String msg)
   }
   // t_time = now();
   // log time + msg
+}
+void get_Time()
+{
+  uint8_t sec, min, hour, day, month;
+  uint16_t year;
+  rtc.get(&sec, &min, &hour, &day, &month, &year);
+  Serial.print("\nTime: ");
+  Serial.print(hour,DEC);
+  Serial.print(":");
+  Serial.print(min,DEC);
+  Serial.print(":");
+  Serial.print(sec,DEC);
+
+  Serial.print("\nDate: ");
+  Serial.print(day,DEC);
+  Serial.print("/");
+  Serial.print(month,DEC);
+  Serial.print("/");
+  Serial.print(year,DEC);
+  
 }
