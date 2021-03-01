@@ -32,7 +32,7 @@ int airPressure = 40;
 const int SD_pin = 10;
 const int PUMP1 = 6;
 const int PUMP2 = 7;
-const int AIR = 9; // the Arduino pin, which connects to the IN pin of relay
+//const int AIR = 9; // the Arduino pin, which connects to the IN pin of relay
 // the setup function runs once when you press reset or power the board
 uint8_t sec, min, hour, day, month;
 uint16_t year;
@@ -45,12 +45,12 @@ void setup()
   pinMode(SD_pin, OUTPUT);
   pinMode(PUMP1, OUTPUT);
   pinMode(PUMP2, OUTPUT);
-  pinMode(AIR, OUTPUT);
-  EEPROM.write(202, harvesteTimeDelay);
-  EEPROM.write(303, harvesteTimeDelay);
-  data_file = SD.open("data.txt", FILE_WRITE);
-  rtc.set(0, 0, 8, 24, 12, 2014); //08:00:00 24.12.2014 //sec, min, hour, day, month, year  - only set one time
-  rtc.start();
+  //pinMode(AIR, OUTPUT);
+  //EEPROM.write(202, harvesteTimeDelay);
+  //EEPROM.write(303, harvesteTimeDelay);
+  //data_file = SD.open("data.txt", FILE_WRITE);
+  //rtc.set(0, 0, 8, 24, 12, 2014); //08:00:00 24.12.2014 //sec, min, hour, day, month, year  - only set one time
+  //rtc.start();
 }
 
 void loop()
@@ -93,14 +93,14 @@ int handleHarvesting()
 {
   // TODO: activate harvesting pump for preconfigued time
   int harvestingDurationSeconds = EEPROM.read(202);
-  analogWrite(AIR, 0);              //Turn airPump Off
+  //analogWrite(AIR, 0);              //Turn airPump Off
   Serial.println("Air Pump Off");
   digitalWrite(PUMP2, HIGH);        // activate pump2
   Serial.println("Pump2 Pump On");
   delay(harvestingDurationSeconds);// delay(harvestingDurationSeconds * 1000L);
   digitalWrite(PUMP2, LOW);
   Serial.println("Pump2 Pump Off"); // stop activate pump2 
-  analogWrite(AIR, airPressure);    //Turn airPump On
+  //analogWrite(AIR, airPressure);    //Turn airPump On
   Serial.println("Air Pump On");
   
   return STATE_FEEDING;             //next step State
@@ -183,3 +183,4 @@ void get_Time()
   Serial.print(year,DEC);
   
 }
+

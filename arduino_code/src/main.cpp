@@ -1,4 +1,4 @@
-#include <Arduino.h>
+/*#include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
 #include <string.h>
@@ -84,7 +84,8 @@ void oneFullCircele()
 // the loop function runs over and over again forever
 void loop()
 {
-
+  uint8_t sec, min, hour, day, month;  //rtc init var
+  uint16_t year;                       //rtc init var
   data_file = SD.open("data.txt", FILE_WRITE);
 
   // if the file opens, run and log:
@@ -118,4 +119,5 @@ void loop()
   oneFullCircele(); // do one hole circele .
 
   delay(DelayBetweenLoops); // Delay Bbetween loops
-}
+}*/
+
