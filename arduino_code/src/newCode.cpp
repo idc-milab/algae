@@ -5,6 +5,8 @@
 #include <string.h>
 #include "/lib/SparkFun_AS726X/src/AS726X.h"
 
+
+DS1307 rtc;
 #define STATE_NONE 0
 #define STATE_GROWING 10
 #define STATE_HARVESTING 20
@@ -19,6 +21,7 @@ void handleStateTransition(int old, int neww);
 void logToFile(String msg);
 int restorePreviousState();
 void logToFile(String);
+void getTime();
 
 //varabales we want to adjust
 File data_file;
@@ -38,6 +41,9 @@ const int PUMP1 = 6;
 const int PUMP2 = 7;
 const int AIR = 9; // the Arduino pin, which connects to the IN pin of relay
 // the setup function runs once when you press reset or power the board
+uint8_t sec, min, hour, day, month;
+uint16_t year;
+
 
 void setup()
 {
@@ -55,6 +61,7 @@ void setup()
 
 void loop()
 {
+  
   switch (state)
   {
   case STATE_GROWING:
@@ -111,7 +118,7 @@ int handleGrowing()
     startMillis = currentMillis;
   }
 
-  return STATE_GROWING;
+  return STATE_HARVESTING;
 }
 
 // activate harvesting pump for preconfigued time
@@ -123,11 +130,12 @@ int handleHarvesting()
   Serial.println("Air Pump Off");
   digitalWrite(PUMP2, HIGH); // activate pump2
   Serial.println("Pump2 Pump On");
-  delay(harvestingDurationSeconds); // delay(harvestingDurationSeconds * 1000L);
+  delay(harvestingDurationSeconds);// delay(harvestingDurationSeconds * 1000L);
+  digitalWrite(PUMP2, LOW);
+  Serial.println("Pump2 Pump Off"); // stop activate pump2 
   analogWrite(AIR, airPressure);    //Turn airPump On
   Serial.println("Air Pump On");
-  digitalWrite(PUMP2, LOW);
-  Serial.println("Pump2 Pump Off"); // stop activate pump2
+  
   return STATE_FEEDING;             //next step State
 }
 
@@ -138,9 +146,19 @@ int handleFeeding()
   int feedingDurationSeconds = EEPROM.read(303);
   digitalWrite(PUMP1, HIGH); // activate pump1
   Serial.println("Pump1 Pump On");
+  Serial.println("Time: ");
+  Serial.print(hour, DEC);
+  Serial.print(":");
+  Serial.print(min, DEC);
+  Serial.print(":");
   delay(feedingDurationSeconds);
   digitalWrite(PUMP1, LOW);         // stop activate pump1
   Serial.println("Pump1 Pump Off"); // delay(feedingDurationSeconds * 1000L);
+  Serial.println("Time: ");
+  Serial.print(hour, DEC);
+  Serial.print(":");
+  Serial.print(min, DEC);
+  Serial.print(":");
 
   return STATE_GROWING; //next step State
 }
@@ -151,6 +169,7 @@ void handleStateTransition(int old, int neww)
   // 1. persist new state to EEPROM: which, start time
   EEPROM.write(0, neww);
   // 1.1. get current time using rtc.now();
+
   // 1.2. serialize time to bytes
   // 1.3. persist times bytes to eeprom at address 1 upwards
   // 1.4. lastStateTransition = now;
@@ -178,4 +197,24 @@ void logToFile(String msg)
   }
   // t_time = now();
   // log time + msg
+}
+void get_Time()
+{
+  uint8_t sec, min, hour, day, month;
+  uint16_t year;
+  rtc.get(&sec, &min, &hour, &day, &month, &year);
+  Serial.print("\nTime: ");
+  Serial.print(hour,DEC);
+  Serial.print(":");
+  Serial.print(min,DEC);
+  Serial.print(":");
+  Serial.print(sec,DEC);
+
+  Serial.print("\nDate: ");
+  Serial.print(day,DEC);
+  Serial.print("/");
+  Serial.print(month,DEC);
+  Serial.print("/");
+  Serial.print(year,DEC);
+  
 }
