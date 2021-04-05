@@ -21,7 +21,7 @@ void setup() {
   pinMode(CS_pin, OUTPUT);
   pinMode(PUMP1, OUTPUT);
   pinMode(PUMP2, OUTPUT);
-  pinMode(AIR, OUTPUT);
+  //pinMode(AIR, OUTPUT);
 
   // SD Card Initialization
   if (SD.begin())
@@ -61,7 +61,7 @@ void loop() {
             hr = hr + 1;
             mint = 0;
             }
-      analogWrite(AIR , 40);//Turn airPump on
+     // analogWrite(AIR , 40);//Turn airPump on
 
       data_file.println("Air Pump On");
       Serial.println("Air Pump On");
@@ -92,7 +92,7 @@ void loop() {
   {
     Serial.println("error opening data.txt");
 
-       analogWrite(AIR , 40);//Turn airPump on
+      // analogWrite(AIR , 40);//Turn airPump on
       Serial.println("Air Pump On");
       digitalWrite(PUMP2, HIGH);  // Turn on pump2
       Serial.println("Pump2 - Pump On");
