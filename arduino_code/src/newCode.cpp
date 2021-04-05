@@ -42,8 +42,9 @@ unsigned long currentMillis;      // update every call to millis()
 const int SD_pin = 10;
 const int PUMP1 = 6;
 const int PUMP2 = 7;
-const int AIR = 9; // the Arduino pin, which connects to the IN pin of relay
+const int AIR = 9 ; // the Arduino pin, which connects to the IN pin of relay
 // the setup function runs once when you press reset or power the board
+
 uint8_t sec;
 uint8_t min;
 uint8_t hour;
